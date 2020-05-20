@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  webserver:
+    build:
+      context: ./bin/webserver
+    container_name: 'laravel-webserver'
+    restart: 'always'
+    links:
+      - postgres
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./www:/var/www
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/hosts:/etc/hosts
+      - ./config/vhosts:/etc/apache2/sites-enabled
+      - ./logs/apache2:/var/log/apache2
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: tiger
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  redis:
+    image: "redis"
+    container_name: redis-server
+    command: redis-server --requirepass tiger
+    ports:
+     - "6379:6379"
+    volumes:
+      - ./redis/data:/var/lib/redis
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+     - REDIS_REPLICATION_MODE=master
+    networks:
+      node_net:
+        ipv4_address: 172.28.1.4
+
+networks:
+  node_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
