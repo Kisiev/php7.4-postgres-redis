@@ -5,5 +5,4 @@
 /data/*
 /logs/*
 /www/*
-!/www/html
 .DS_Store
