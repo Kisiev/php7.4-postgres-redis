@@ -33,6 +33,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #RUN git clone https://github.com/laravel/laravel.git laravelproject
 #RUN cd laravelproject && composer install
 
+RUN apt-get -y install php-pgsql php-mbstring php-dom php-zip php-unzip
+
 # Enable apache modules
 RUN a2enmod rewrite headers
 
